@@ -221,10 +221,7 @@ kind: Deployment
 
 ## 📞 Contacto del Autor
 👤 Cristian David Duran Grimaldo  
-📧 Email: [tu-email@dominio.com]  
 🌐 GitHub: [ChrisDuran19](https://github.com/ChrisDuran19)  
-💼 LinkedIn: [Perfil LinkedIn](https://linkedin.com)  
-
 ---
 
 ## 📝 Licencia
