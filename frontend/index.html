@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Conductor - Plataforma profesional de orquestación DevOps para Ansible y Terraform">
+    <meta name="keywords" content="DevOps, Ansible, Terraform, Orquestación, Automatización">
+    <title>Conductor - Plataforma de Orquestación DevOps</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen">
+            <div class="loading-content">
+                <div class="loading-logo">
+                    <i class="fas fa-music fa-3x"></i>
+                </div>
+                <div class="loading-text">Conductor</div>
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-music"></i>
+                    <span class="logo-text">Conductor</span>
+                    <span class="version">v2.1.0</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <button class="nav-btn active" data-section="dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="jobs">
+                            <i class="fas fa-tasks"></i>
+                            <span>Jobs</span>
+                            <span class="badge" id="active-jobs-badge">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="ansible">
+                            <i class="fas fa-server"></i>
+                            <span>Ansible</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="terraform">
+                            <i class="fas fa-cloud"></i>
+                            <span>Terraform</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="inventories">
+                            <i class="fas fa-list"></i>
+                            <span>Inventarios</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="templates">
+                            <i class="fas fa-file-code"></i>
+                            <span>Templates</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="schedules">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Programación</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="logs">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Logs</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-btn" data-section="settings">
+                            <i class="fas fa-cog"></i>
+                            <span>Configuración</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <div class="status-item">
+                        <i class="fas fa-circle text-success"></i>
+                        <span>Sistema</span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-database"></i>
+                        <span id="db-status">DB OK</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="header-menu-btn" id="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="breadcrumb">
+                    <span id="current-section">Dashboard</span>
+                </div>
+            </div>
+
+            <div class="header-center">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar jobs, inventarios, templates..." id="global-search">
+                    <kbd class="search-shortcut">Ctrl+K</kbd>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="header-actions">
+                    <button class="action-btn" id="notifications-btn" title="Notificaciones">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    
+                    <div class="connection-status" id="connection-status">
+                        <div class="status-indicator online">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <span class="status-text">Online</span>
+                    </div>
+
+                    <div class="user-menu">
+                        <button class="user-avatar" id="user-menu-btn">
+                            <i class="fas fa-user-circle"></i>
+                            <span class="user-name">Admin</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-dropdown" id="user-dropdown">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Perfil
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-key"></i>
+                                Cambiar Contraseña
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item text-danger">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Cerrar Sesión
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="section active">
+                <div class="section-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </h1>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary" onclick="refreshDashboard()">
+                            <i class="fas fa-sync-alt"></i>
+                            Actualizar
+                        </button>
+                        <button class="btn btn-primary" onclick="quickJobModal()">
+                            <i class="fas fa-plus"></i>
+                            Job Rápido
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="total-jobs">0</div>
+                            <div class="stat-label">Jobs Totales</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +12%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card success">
+                        <div class="stat-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="running-jobs">0</div>
+                            <div class="stat-label">En Ejecución</div>
+                            <div class="stat-change">
+                                <i class="fas fa-minus"></i>
+                                Sin cambios
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="completed-jobs">0</div>
+                            <div class="stat-label">Completados</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +8%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card info">
+                        <div class="stat-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="total-hosts">1</div>
+                            <div class="stat-label">Hosts Activos</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +2
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Content Grid -->
+                <div class="dashboard-grid">
+                    <!-- Recent Activity -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-history"></i>
+                                Actividad Reciente
+                            </h3>
+                            <div class="card-actions">
+                                <button class="btn-icon" onclick="refreshActivity()">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div id="activity-list" class="activity-list">
+                                <!-- Actividad se carga dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Health -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-heartbeat"></i>
+                                Estado del Sistema
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="health-metrics">
+                                <div class="metric">
+                                    <span class="metric-label">CPU</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 45%" data-value="45"></div>
+                                    </div>
+                                    <span class="metric-value">45%</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Memoria</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 62%" data-value="62"></div>
+                                    </div>
+                                    <span class="metric-value">62%</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Disco</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 28%" data-value="28"></div>
+                                    </div>
+                                    <span class="metric-value">28%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-bolt"></i>
+                                Acciones Rápidas
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="quick-actions">
+                                <button class="quick-action" onclick="switchSection('ansible')">
+                                    <i class="fas fa-server"></i>
+                                    <span>Nuevo Playbook</span>
+                                </button>
+                                <button class="quick-action" onclick="switchSection('terraform')">
+                                    <i class="fas fa-cloud"></i>
+                                    <span>Terraform Plan</span>
+                                </button>
+                                <button class="quick-action" onclick="switchSection('inventories')">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Crear Inventario</span>
+                                </button>
+                                <button class="quick-action" onclick="switchSection('schedules')">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Programar Job</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Jobs Section -->
+            <section id="jobs-section" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-tasks"></i>
+                        Gestión de Jobs
+                    </h1>
+                    <div class="section-actions">
+                        <div class="filter-group">
+                            <select class="form-select" id="job-status-filter">
+                                <option value="">Todos los estados</option>
+                                <option value="running">En ejecución</option>
+                                <option value="completed">Completado</option>
+                                <option value="failed">Fallido</option>
+                                <option value="pending">Pendiente</option>
+                            </select>
+                            <select class="form-select" id="job-type-filter">
+                                <option value="">Todos los tipos</option>
+                                <option value="ansible">Ansible</option>
+                                <option value="terraform">Terraform</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" onclick="refreshJobs()">
+                            <i class="fas fa-sync-alt"></i>
+                            Actualizar
+                        </button>
+                        <button class="btn btn-primary" onclick="createNewJob()">
+                            <i class="fas fa-plus"></i>
+                            Nuevo Job
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="jobs-toolbar">
+                        <div class="toolbar-left">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Buscar jobs..." id="jobs-search">
+                            </div>
+                        </div>
+                        <div class="toolbar-right">
+                            <div class="view-options">
+                                <button class="view-btn active" data-view="list">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                                <button class="view-btn" data-view="grid">
+                                    <i class="fas fa-th"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="jobs-container" id="jobs-container">
+                        <div class="jobs-list" id="jobs-list">
+                            <!-- Jobs se cargan dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ansible Section -->
+            <section id="ansible-section" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-server"></i>
+                        Ansible Playbooks
+                    </h1>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary" onclick="loadPlaybookTemplate()">
+                            <i class="fas fa-file-import"></i>
+                            Cargar Template
+                        </button>
+                        <button class="btn btn-secondary" onclick="validatePlaybook()">
+                            <i class="fas fa-check-circle"></i>
+                            Validar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-grid">
+                    <div class="content-card main-content-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Editor de Playbook</h3>
+                            <div class="card-actions">
+                                <button class="btn-icon" onclick="formatYaml()">
+                                    <i class="fas fa-align-left"></i>
+                                </button>
+                                <button class="btn-icon" onclick="fullscreenEditor()">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <form id="ansible-form" class="playbook-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="playbook-name">
+                                        <i class="fas fa-tag"></i>
+                                        Nombre del Job
+                                    </label>
+                                    <input type="text" id="playbook-name" class="form-input" 
+                                           placeholder="Ej: Deploy Web Server" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="playbook-tags">
+                                        <i class="fas fa-tags"></i>
+                                        Tags
+                                    </label>
+                                    <input type="text" id="playbook-tags" class="form-input" 
+                                           placeholder="tag1, tag2, tag3">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="playbook-content">
+                                    <i class="fas fa-code"></i>
+                                    Playbook YAML
+                                </label>
+                                <div class="editor-container">
+                                    <textarea id="playbook-content" class="code-editor" rows="15" 
+                                              placeholder="---&#10;- name: Ejemplo de playbook&#10;  hosts: all&#10;  become: yes&#10;  tasks:&#10;    - name: Ping test&#10;      ping:&#10;    &#10;    - name: Instalar paquetes&#10;      package:&#10;        name: &#10;          - nginx&#10;          - git&#10;        state: present&#10;    &#10;    - name: Crear archivo de configuración&#10;      template:&#10;        src: config.j2&#10;        dest: /etc/nginx/nginx.conf&#10;      notify: reiniciar nginx&#10;  &#10;  handlers:&#10;    - name: reiniciar nginx&#10;      service:&#10;        name: nginx&#10;        state: restarted" required></textarea>
+                                    <div class="editor-footer">
+                                        <span class="editor-info">YAML • Líneas: <span id="line-count">1</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="inventory-select">
+                                    <i class="fas fa-list"></i>
+                                    Inventario
+                                </label>
+                                <div class="input-group">
+                                    <select id="inventory-select" class="form-select">
+                                        <option value="">Seleccionar inventario existente</option>
+                                    </select>
+                                    <button type="button" class="btn btn-outline" onclick="toggleCustomInventory()">
+                                        <i class="fas fa-edit"></i>
+                                        Custom
+                                    </button>
+                                </div>
+                                <textarea id="inventory-content" class="form-textarea" rows="6" 
+                                          placeholder="[webservers]&#10;server1 ansible_host=192.168.1.10 ansible_user=ubuntu&#10;server2 ansible_host=192.168.1.11 ansible_user=ubuntu&#10;&#10;[databases]&#10;db1 ansible_host=192.168.1.20 ansible_user=ubuntu&#10;&#10;[all:vars]&#10;ansible_python_interpreter=/usr/bin/python3" 
+                                          style="display: none;"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="ansible-variables">
+                                    <i class="fas fa-code"></i>
+                                    Variables Extra (JSON)
+                                </label>
+                                <textarea id="ansible-variables" class="form-textarea code-editor" rows="6" 
+                                          placeholder='{&#10;  "app_name": "mi-aplicacion",&#10;  "app_version": "1.0.0",&#10;  "database_host": "192.168.1.20",&#10;  "database_port": 5432,&#10;  "debug_mode": false&#10;}'></textarea>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="savePlaybookDraft()">
+                                    <i class="fas fa-save"></i>
+                                    Guardar Borrador
+                                </button>
+                                <button type="button" class="btn btn-outline" onclick="dryRunPlaybook()">
+                                    <i class="fas fa-eye"></i>
+                                    Dry Run
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-play"></i>
+                                    Ejecutar Playbook
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Sidebar with templates and history -->
+                    <div class="sidebar-content">
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h4 class="card-title">Templates</h4>
+                            </div>
+                            <div class="templates-list">
+                                <div class="template-item" onclick="loadTemplate('basic-setup')">
+                                    <i class="fas fa-file-code"></i>
+                                    <span>Configuración Básica</span>
+                                </div>
+                                <div class="template-item" onclick="loadTemplate('web-server')">
+                                    <i class="fas fa-globe"></i>
+                                    <span>Servidor Web</span>
+                                </div>
+                                <div class="template-item" onclick="loadTemplate('database')">
+                                    <i class="fas fa-database"></i>
+                                    <span>Base de Datos</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Terraform Section -->
+            <section id="terraform-section" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-cloud"></i>
+                        Terraform Infrastructure
+                    </h1>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary" onclick="importTerraformState()">
+                            <i class="fas fa-download"></i>
+                            Importar State
+                        </button>
+                        <button class="btn btn-secondary" onclick="validateTerraform()">
+                            <i class="fas fa-check-circle"></i>
+                            Validar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="terraform-tabs">
+                        <div class="tabs">
+                            <button class="tab active" data-tab="plan">
+                                <i class="fas fa-search"></i>
+                                Plan
+                            </button>
+                            <button class="tab" data-tab="apply">
+                                <i class="fas fa-rocket"></i>
+                                Apply
+                            </button>
+                            <button class="tab" data-tab="destroy">
+                                <i class="fas fa-trash"></i>
+                                Destroy
+                            </button>
+                            <button class="tab" data-tab="state">
+                                <i class="fas fa-list-alt"></i>
+                                State
+                            </button>
+                        </div>
+                    </div>
+
+                    <form id="terraform-form" class="terraform-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label" for="terraform-name">
+                                    <i class="fas fa-tag"></i>
+                                    Nombre del Proyecto
+                                </label>
+                                <input type="text" id="terraform-name" class="form-input" 
+                                       placeholder="Ej: AWS Production Infrastructure" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="terraform-workspace">
+                                    <i class="fas fa-layer-group"></i>
+                                    Workspace
+                                </label>
+                                <select id="terraform-workspace" class="form-select">
+                                    <option value="default">default</option>
+                                    <option value="development">development</option>
+                                    <option value="staging">staging</option>
+                                    <option value="production">production</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="terraform-dir">
+                                <i class="fas fa-folder"></i>
+                                Directorio de Trabajo
+                            </label>
+                            <div class="input-group">
+                                <input type="text" id="terraform-dir" class="form-input" 
+                                       placeholder="/path/to/terraform/project" required>
+                                <button type="button" class="btn btn-outline" onclick="browseDirectory()">
+                                    <i class="fas fa-folder-open"></i>
+                                    Examinar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="terraform-variables">
+                                <i class="fas fa-code"></i>
+                                Variables (JSON/HCL)
+                            </label>
+                            <textarea id="terraform-variables" class="form-textarea code-editor" rows="8" 
+                                      placeholder='{&#10;  "region": "us-east-1",&#10;  "instance_type": "t3.micro",&#10;  "environment": "production",&#10;  "availability_zones": ["us-east-1a", "us-east-1b"],&#10;  "enable_monitoring": true,&#10;  "backup_retention_days": 7&#10;}'></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-cogs"></i>
+                                Opciones Avanzadas
+                            </label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="terraform-auto-approve">
+                                    <span class="checkmark"></span>
+                                    Auto-approve (Apply automático)
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="terraform-parallelism">
+                                    <span class="checkmark"></span>
+                                    Ejecutión paralela
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="terraform-refresh">
+                                    <span class="checkmark"></span>
+                                    Refresh state antes de plan
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="terraform-actions">
+                            <button type="button" class="btn btn-secondary" onclick="initTerraform()">
+                                <i class="fas fa-download"></i>
+                                Init
+                            </button>
+                            <button type="button" class="btn btn-info" onclick="executeTerraformPlan()">
+                                <i class="fas fa-search"></i>
+                                Plan
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="executeTerraformApply()">
+                                <i class="fas fa-rocket"></i>
+                                Apply
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="executeTerraformDestroy()">
+                                <i class="fas fa-trash"></i>
+                                Destroy
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Inventories Section -->
+            <section id="inventories-section" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-list"></i>
+                        Gestión de Inventarios
+                    </h1>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary" onclick="importInventory()">
+                            <i class="fas fa-file-import"></i>
+                            Importar
+                        </button>
+                        <button class="btn btn-primary" onclick="showCreateInventoryModal()">
+                            <i class="fas fa-plus"></i>
+                            Nuevo Inventario
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="inventories-toolbar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Buscar inventarios..." id="inventories-search">
+                        </div>
+                        <div class="filter-group">
+                            <select class="form-select" id="inventory-type-filter">
+                                <option value="">Todos los tipos</option>
+                                <option value="static">Estático</option>
+                                <option value="dynamic">Dinámico</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="inventories-list" class="inventories-grid">
+                        <!-- Inventarios se cargan dinámicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Templates Section -->
+            <section id="templates-section" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-file-code"></i>
+                        Biblioteca de Templates
+                    </h1>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary" onclick="importTemplate()">
+                            <i class="fas fa-upload"></i>
+                            Importar Template
+                        </button>
+                        <button class="btn btn-primary" onclick="createNewTemplate()">
+                            <i class="fas fa-plus"></i>
+                            Nuevo Template
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-grid templates-grid">
+                    <div class="template-category">
+                        <h3 class="category-title">
+                            <i class="fas fa-server"></i>
+                            Ansible Playbooks
+                        </h3>
+                        <div class="templates-list" id="ansible-templates">
+                            <!-- Templates de Ansible -->
+                        </div>
+                    </div>
+
+                    <div class="template-category">
+                        <h3 class="category-title">
+                            <i class="fas fa-cloud"></i>
+                            Terraform Modules
+                        </h3>
+                        <div class="templates-list" id="terraform-templates">
+                            <!-- Templates de Terraform -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Schedules Section -->
+            <section id="schedules-section" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        Programación de Jobs
+                    </h1>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="createSchedule()">
+                            <i class="fas fa-plus"></i>
+                            Nueva Programación
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-grid">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Jobs Programados</h3>
+                        </div>
+                        <div class="schedules-list" id="schedules-list">
+                            <!-- Lista de jobs programados -->
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Calendario</h3>
+                        </div>
+                        <div class="calendar-container" id="calendar">
+                            <!-- Calendario de ejecuciones -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Logs Section -->
+            <section id="logs-section" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-file-alt"></i>
+                        Logs del Sistema
+                    </h1>
+                    <div class="section-actions">
+                        <div class="filter-group">
+                            <select class="form-select" id="log-level-filter">
+                                <option value="">Todos los niveles</option>
+                                <option value="debug">Debug</option>
+                                <option value="info">Info</option>
+                                <option value="warning">Warning</option>
+                                <option value="error">Error</option>
+                            </select>
+                            <input type="date" class="form-input" id="log-date-filter">
+                        </div>
+                        <button class="btn btn-secondary" onclick="exportLogs()">
+                            <i class="fas fa-download"></i>
+                            Exportar
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearLogs()">
+                            <i class="fas fa-trash"></i>
+                            Limpiar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="logs-toolbar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Buscar en logs..." id="logs-search">
+                        </div>
+                        <div class="toolbar-right">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="auto-refresh-logs">
+                                <span class="toggle-slider"></span>
+                                Auto-actualizar
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="logs-container" id="logs-container">
+                        <div class="logs-list" id="logs-list">
+                            <!-- Logs se cargan dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-cog"></i>
+                        Configuración del Sistema
+                    </h1>
+                </div>
+                
+                <div class="settings-grid">
+                    <div class="settings-category">
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-user"></i>
+                                    Configuración de Usuario
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <form class="settings-form">
+                                    <div class="form-group">
+                                        <label class="form-label">Nombre de Usuario</label>
+                                        <input type="text" class="form-input" value="admin" id="username">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-input" value="admin@conductor.local" id="email">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Zona Horaria</label>
+                                        <select class="form-select" id="timezone">
+                                            <option value="UTC">UTC</option>
+                                            <option value="America/Bogota" selected>America/Bogota</option>
+                                            <option value="America/New_York">America/New_York</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-category">
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-server"></i>
+                                    Configuración del Sistema
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <form class="settings-form">
+                                    <div class="form-group">
+                                        <label class="form-label">Máximo Jobs Concurrentes</label>
+                                        <input type="number" class="form-input" value="5" id="max-concurrent-jobs">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Timeout por Defecto (minutos)</label>
+                                        <input type="number" class="form-input" value="30" id="default-timeout">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Retención de Logs (días)</label>
+                                        <input type="number" class="form-input" value="30" id="log-retention">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-category">
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-bell"></i>
+                                    Notificaciones
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="notification-settings">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked id="notify-job-completion">
+                                        <span class="toggle-slider"></span>
+                                        Notificar finalización de jobs
+                                    </label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked id="notify-job-failure">
+                                        <span class="toggle-slider"></span>
+                                        Notificar fallos de jobs
+                                    </label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="notify-system-alerts">
+                                        <span class="toggle-slider"></span>
+                                        Alertas del sistema
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-category">
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-key"></i>
+                                    Seguridad
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <form class="settings-form">
+                                    <div class="form-group">
+                                        <label class="form-label">Contraseña Actual</label>
+                                        <input type="password" class="form-input" id="current-password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Nueva Contraseña</label>
+                                        <input type="password" class="form-input" id="new-password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Confirmar Nueva Contraseña</label>
+                                        <input type="password" class="form-input" id="confirm-password">
+                                    </div>
+                                    <button type="button" class="btn btn-primary" onclick="changePassword()">
+                                        <i class="fas fa-key"></i>
+                                        Cambiar Contraseña
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-actions">
+                    <button class="btn btn-secondary" onclick="resetSettings()">
+                        <i class="fas fa-undo"></i>
+                        Restaurar Valores por Defecto
+                    </button>
+                    <button class="btn btn-success" onclick="saveSettings()">
+                        <i class="fas fa-save"></i>
+                        Guardar Configuración
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Job Output Modal -->
+    <div id="job-modal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 id="job-modal-title">Detalles del Job</h3>
+                <div class="modal-actions">
+                    <button class="btn-icon" onclick="downloadJobOutput()">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn-icon" onclick="closeJobModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="job-info-grid">
+                    <div class="job-info-item">
+                        <span class="info-label">Estado:</span>
+                        <span id="job-modal-status" class="status-badge"></span>
+                    </div>
+                    <div class="job-info-item">
+                        <span class="info-label">Duración:</span>
+                        <span id="job-modal-duration"></span>
+                    </div>
+                    <div class="job-info-item">
+                        <span class="info-label">Inicio:</span>
+                        <span id="job-modal-start-time"></span>
+                    </div>
+                    <div class="job-info-item">
+                        <span class="info-label">Fin:</span>
+                        <span id="job-modal-end-time"></span>
+                    </div>
+                </div>
+                <div class="job-output-container">
+                    <div class="output-tabs">
+                        <button class="tab active" data-tab="stdout">Stdout</button>
+                        <button class="tab" data-tab="stderr">Stderr</button>
+                        <button class="tab" data-tab="details">Detalles</button>
+                    </div>
+                    <pre id="job-output" class="job-output"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Inventory Modal -->
+    <div id="inventory-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Crear Nuevo Inventario</h3>
+                <button class="btn-icon" onclick="closeInventoryModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="inventory-form">
+                    <div class="form-group">
+                        <label class="form-label" for="inventory-name">
+                            <i class="fas fa-tag"></i>
+                            Nombre del Inventario
+                        </label>
+                        <input type="text" id="inventory-name" class="form-input" 
+                               placeholder="Ej: Servidores Producción" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="inventory-description">
+                            <i class="fas fa-align-left"></i>
+                            Descripción
+                        </label>
+                        <textarea id="inventory-description" class="form-textarea" rows="3" 
+                                  placeholder="Descripción del inventario..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-layer-group"></i>
+                            Tipo de Inventario
+                        </label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="inventory-type" value="static" checked>
+                                <span class="radio-mark"></span>
+                                Estático
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="inventory-type" value="dynamic">
+                                <span class="radio-mark"></span>
+                                Dinámico
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="static-inventory-group">
+                        <label class="form-label" for="inventory-hosts">
+                            <i class="fas fa-code"></i>
+                            Hosts (YAML/JSON)
+                        </label>
+                        <div class="editor-tabs">
+                            <button type="button" class="editor-tab active" data-format="yaml">YAML</button>
+                            <button type="button" class="editor-tab" data-format="json">JSON</button>
+                        </div>
+                        <textarea id="inventory-hosts" class="form-textarea code-editor" rows="12" 
+                                  placeholder="all:&#10;  children:&#10;    webservers:&#10;      hosts:&#10;        web1:&#10;          ansible_host: 192.168.1.10&#10;          ansible_user: ubuntu&#10;        web2:&#10;          ansible_host: 192.168.1.11&#10;          ansible_user: ubuntu&#10;    databases:&#10;      hosts:&#10;        db1:&#10;          ansible_host: 192.168.1.20&#10;          ansible_user: postgres&#10;  vars:&#10;    ansible_python_interpreter: /usr/bin/python3"></textarea>
+                    </div>
+                    
+                    <div class="form-group" id="dynamic-inventory-group" style="display: none;">
+                        <label class="form-label" for="inventory-script">
+                            <i class="fas fa-code"></i>
+                            Script de Inventario Dinámico
+                        </label>
+                        <input type="text" id="inventory-script" class="form-input" 
+                               placeholder="/path/to/dynamic/inventory/script.py">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeInventoryModal()">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="validateInventory()">
+                            <i class="fas fa-check"></i>
+                            Validar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Crear Inventario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Job Modal -->
+    <div id="quick-job-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Job Rápido</h3>
+                <button class="btn-icon" onclick="closeQuickJobModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="quick-job-options">
+                    <div class="quick-job-option" onclick="quickAnsibleJob()">
+                        <i class="fas fa-server fa-2x"></i>
+                        <h4>Ansible Ad-hoc</h4>
+                        <p>Ejecutar comando rápido en hosts</p>
+                    </div>
+                    <div class="quick-job-option" onclick="quickTerraformJob()">
+                        <i class="fas fa-cloud fa-2x"></i>
+                        <h4>Terraform Plan</h4>
+                        <p>Ejecutar plan rápido</p>
+                    </div>
+                    <div class="quick-job-option" onclick="quickHealthCheck()">
+                        <i class="fas fa-heartbeat fa-2x"></i>
+                        <h4>Health Check</h4>
+                        <p>Verificar estado de hosts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h3 id="confirm-title">Confirmar Acción</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message">¿Está seguro de que desea continuar?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfirmModal()">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" id="confirm-btn" onclick="confirmAction()">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Dropdown -->
+    <div id="notifications-dropdown" class="dropdown-menu">
+        <div class="dropdown-header">
+            <h4>Notificaciones</h4>
+            <button class="btn-text" onclick="markAllRead()">Marcar todas como leídas</button>
+        </div>
+        <div class="notifications-list" id="notifications-list">
+            <!-- Notificaciones se cargan dinámicamente -->
+        </div>
+        <div class="dropdown-footer">
+            <a href="#" onclick="viewAllNotifications()">Ver todas las notificaciones</a>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Progress Indicator -->
+    <div id="progress-indicator" class="progress-indicator">
+        <div class="progress-bar"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/utils/utils.js"></script>
+    <script>
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+            }, 1500);
+            
+            // Initialize app
+            if (typeof ConductorApp !== 'undefined') {
+                ConductorApp.init();
+            }
+        });
+
+        // Service Worker registration for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
